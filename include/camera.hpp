@@ -13,8 +13,10 @@
 #define GRAYSCALE "NV12"
 #define RGB "BGRx"
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/videoio.hpp>
+#include<opencv2/core/core.hpp>
+#include<opencv2/videoio.hpp>
+#include<thread>
+#include<mutex>
 
 using namespace std;
 
@@ -52,8 +54,6 @@ class Camera : public cv::VideoCapture
 
         bool isOpened() const;
         cv::Mat getFrame();
-        void previewFrame() const;
-
         void setPipeline();
 
     private:

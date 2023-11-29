@@ -51,9 +51,3 @@ cv::Mat Camera::getFrame()
     
     return frame;
 }
-
-void Camera::previewFrame() const
-{
-    cv::imshow("Preview", frame);
-    cv::waitKey(1);
-}
