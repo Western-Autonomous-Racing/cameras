@@ -15,8 +15,7 @@
 
 #include<opencv2/core/core.hpp>
 #include<opencv2/videoio.hpp>
-#include<thread>
-#include<mutex>
+#include<map>
 
 using namespace std;
 
@@ -29,18 +28,13 @@ enum CameraMode {
 };
 
 struct CameraConfig {
+    int mode;
     string width;
     string height;
     string framerate;
 };
 
-std::map<CameraMode, CameraConfig> cameraConfigs = {
-    {MODE_0, {"3280", "2464", "21"}},
-    {MODE_1, {"3280", "1848", "28"}},
-    {MODE_2, {"1920", "1080", "30"}},
-    {MODE_3, {"1640", "1232", "30"}},
-    {MODE_4, {"1280", "720", "60"}}
-};
+extern std::map<CameraMode, CameraConfig> cameraConfigs;
 
 
 class Camera : public cv::VideoCapture

@@ -31,6 +31,7 @@ int main(int argc, char** argv)
             break;
         }
     }
-
+    
+    cv::destroyAllWindows();
     return 0;
 }
