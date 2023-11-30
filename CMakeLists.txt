@@ -21,5 +21,6 @@ set(SOURCES src/main.cpp src/camera.cpp)
 
 # Create the executable
 add_executable(camera_imu ${SOURCES})
+add_executable(imu ${SOURCES})
 
 target_link_libraries(camera_imu ${OpenCV_LIBS})
