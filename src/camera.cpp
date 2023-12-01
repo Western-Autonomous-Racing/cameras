@@ -58,7 +58,7 @@ cv::Mat Camera::getFrame()
     if (frame.empty())
         return cv::Mat();
 
-    // cv::medianBlur(frame, frame, 3);
+    // cv::medianBlur(frame, frame, 5);
     
     return frame;
 }

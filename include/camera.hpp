@@ -37,7 +37,7 @@ struct CameraConfig {
 extern std::map<CameraMode, CameraConfig> cameraConfigs;
 
 
-class Camera : public cv::VideoCapture
+class Camera
 {
     // pipeline: "nvarguscamerasrc sensor-mode=2 ! video/x-raw(memory:NVMM),width=1920,height=1080,format=(string)NV12,framerate=(fraction)30/1 ! "
     //           "nvvidconv ! video/x-raw, format=(string)BGRx ! videoconvert ! videoflip method=rotate-180  ! appsink"
@@ -59,4 +59,4 @@ class Camera : public cv::VideoCapture
         bool vflip;
 };
 
-#endif
+    #endif
