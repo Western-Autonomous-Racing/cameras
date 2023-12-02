@@ -15,15 +15,15 @@ int main(int argc, char** argv)
 
     while (1)
     {
-        cv::Mat frame = camera.getFrame();
+        Image img = camera.getFrame();
 
-        if (frame.empty())
+        if (img.frame.empty())
         {
             cout << "Frame is empty" << endl;
             break;
         }
 
-        cv::imshow("Frame", frame);
+        cv::imshow("Frame", img.frame);
         int key = cv::waitKey(1);
 
         if (key == 'q')

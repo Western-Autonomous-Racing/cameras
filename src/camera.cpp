@@ -2,6 +2,7 @@
 
 #include "../include/camera.hpp"
 #include <opencv2/opencv.hpp>
+#include <chrono>
 
 std::map<CameraMode, CameraConfig> cameraConfigs = {
     {MODE_0, {0, "3280", "2464", "21"}},
@@ -11,7 +12,7 @@ std::map<CameraMode, CameraConfig> cameraConfigs = {
     {MODE_4, {4, "1280", "720", "60"}}
 };
 
-Camera::Camera(bool isColor = true, CameraMode mode = MODE_2, bool vflip = true) : isColor(isColor), mode(mode), vflip(vflip), frame(cv::Mat())
+Camera::Camera(bool isColor = true, CameraMode mode = MODE_2, bool vflip = true) : isColor(isColor), mode(mode), vflip(vflip)
 {
     setPipeline();
 
@@ -51,14 +52,19 @@ bool Camera::isOpened() const
     return cap.isOpened();
 }
 
-cv::Mat Camera::getFrame()
+Image Camera::getFrame()
 {
+    cv::Mat frame;
     cap >> frame;
-    
-    if (frame.empty())
-        return cv::Mat();
+    long long timestamp = chrono::time_point_cast<chrono::nanoseconds>(chrono::system_clock::now()).time_since_epoch().count();
+    Image image{frame, timestamp};
 
-    // cv::medianBlur(frame, frame, 5);
-    
-    return frame;
-}
+    if (frame.empty())
+        return Image{cv::Mat(), -1};
+
+    // cv::medianBlur(image, image, 5);
+
+    // You can use the timestamp as needed
+
+    return Image{frame, timestamp};
+    }

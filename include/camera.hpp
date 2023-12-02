@@ -16,6 +16,7 @@
 #include<opencv2/core/core.hpp>
 #include<opencv2/videoio.hpp>
 #include<map>
+#include <sys/time.h>
 
 using namespace std;
 
@@ -34,6 +35,11 @@ struct CameraConfig {
     string framerate;
 };
 
+struct Image {
+    cv::Mat frame;
+    long long timestamp;
+};
+
 extern std::map<CameraMode, CameraConfig> cameraConfigs;
 
 
@@ -47,11 +53,11 @@ class Camera
         ~Camera();
 
         bool isOpened() const;
-        cv::Mat getFrame();
+        Image getFrame();
         void setPipeline();
+        Image image;
 
     private:
-        cv::Mat frame;
         bool isColor;
         CameraMode mode;
         cv::VideoCapture cap;
