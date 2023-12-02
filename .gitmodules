@@ -1,0 +1,3 @@
+[submodule "ThirdParty/MPU6050-Jetson-Orin"]
+	path = ThirdParty/MPU6050-Jetson-Orin
+	url = https://github.com/Western-Autonomous-Racing/MPU6050-Jetson-Orin.git
