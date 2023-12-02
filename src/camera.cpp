@@ -52,19 +52,19 @@ bool Camera::isOpened() const
     return cap.isOpened();
 }
 
-Image Camera::getFrame()
+Frame Camera::getFrame()
 {
     cv::Mat frame;
     cap >> frame;
     long long timestamp = chrono::time_point_cast<chrono::nanoseconds>(chrono::system_clock::now()).time_since_epoch().count();
-    Image image{frame, timestamp};
+    Frame image{frame, timestamp};
 
     if (frame.empty())
-        return Image{cv::Mat(), -1};
+        return Frame{cv::Mat(), -1};
 
     // cv::medianBlur(image, image, 5);
 
     // You can use the timestamp as needed
 
-    return Image{frame, timestamp};
+    return Frame{frame, timestamp};
     }

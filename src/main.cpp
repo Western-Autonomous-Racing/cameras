@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 
     while (1)
     {
-        Image img = camera.getFrame();
+        Frame img = camera.getFrame();
 
         if (img.frame.empty())
         {

@@ -35,7 +35,7 @@ struct CameraConfig {
     string framerate;
 };
 
-struct Image {
+struct Frame {
     cv::Mat frame;
     long long timestamp;
 };
@@ -53,9 +53,9 @@ class Camera
         ~Camera();
 
         bool isOpened() const;
-        Image getFrame();
+        Frame getFrame();
         void setPipeline();
-        Image image;
+        Frame image;
 
     private:
         bool isColor;
