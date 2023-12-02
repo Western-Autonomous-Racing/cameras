@@ -12,7 +12,7 @@ std::map<CameraMode, CameraConfig> cameraConfigs = {
     {MODE_4, {4, "1280", "720", "60"}}
 };
 
-Camera::Camera(bool isColor = true, CameraMode mode = MODE_2, bool vflip = true) : isColor(isColor), mode(mode), vflip(vflip)
+Camera::Camera(bool isColor, CameraMode mode, bool vflip) : isColor(isColor), mode(mode), vflip(vflip)
 {
     setPipeline();
 
@@ -28,11 +28,12 @@ Camera::Camera(bool isColor = true, CameraMode mode = MODE_2, bool vflip = true)
     }
 }
 
+Camera::Camera() : Camera(true, MODE_2, true) {}
+
 Camera::~Camera()
 {
     cap.release();
 }
-
 
 void Camera::setPipeline()
 {

@@ -16,7 +16,7 @@
 #include<opencv2/core/core.hpp>
 #include<opencv2/videoio.hpp>
 #include<map>
-#include <sys/time.h>
+#include<sys/time.h>
 
 using namespace std;
 
@@ -50,6 +50,7 @@ class Camera
 
     public:
         Camera(bool isColor, CameraMode mode, bool vflip);
+        Camera();
         ~Camera();
 
         bool isOpened() const;
