@@ -1,13 +1,12 @@
 #include "camera_imu_node.hpp"
-#include <std_msgs/Header.h>
+#include <builtin_interfaces/msg/time.hpp>
 
 CameraImuNode::CameraImuNode() : 
-Node("camera_imu_node") 
+Node("camera_imu_node"),  
+camera(true, MODE_2, true),
+imu()
 {
     // Initialize camera
-    camera = Camera();
-    imu = MPU6050();
-
     // Initialize publishers
     imagePublisher = this->create_publisher<sensor_msgs::msg::Image>("/camera/image_raw", 100);
     imuPublisher = this->create_publisher<sensor_msgs::msg::Imu>("/imu", 1000);
