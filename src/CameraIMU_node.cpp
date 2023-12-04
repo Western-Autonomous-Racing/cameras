@@ -1,4 +1,4 @@
-#include "camera_imu_node.hpp"
+#include "CameraIMU_node.hpp"
 #include <builtin_interfaces/msg/time.hpp>
 
 CameraImuNode::CameraImuNode() : 
@@ -28,9 +28,13 @@ void CameraImuNode::SyncandPublish()
         float ax, ay, az, gr, gp, gy;
         long long imu_ts;
         // Get image
+        mMutex.lock();
+
         Frame image = camera.getFrame();
         // Get IMU data
         imu.getIMU(&ax, &ay, &az, &gr, &gp, &gy, &imu_ts);
+
+        mMutex.unlock();
 
         // Publish image
         cv_bridge::CvImage cvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image.frame);

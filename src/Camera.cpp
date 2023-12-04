@@ -1,6 +1,6 @@
 // Author : Daniel Xie
 
-#include "../include/camera.hpp"
+#include "../include/Camera.hpp"
 #include <opencv2/opencv.hpp>
 #include <chrono>
 

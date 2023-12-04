@@ -13,10 +13,9 @@
 #define GRAYSCALE "NV12"
 #define RGB "BGRx"
 
-#include<opencv2/core/core.hpp>
-#include<opencv2/videoio.hpp>
-#include<map>
-#include<sys/time.h>
+#include <opencv2/core/core.hpp>
+#include <opencv2/videoio.hpp>
+#include <map>
 
 using namespace std;
 

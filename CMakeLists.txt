@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.5)
 # Set the project name
 project(camera_imu)
 
-set(CMAKE_BUILD_TYPE Debug)
+# set(CMAKE_BUILD_TYPE Debug)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -36,12 +36,12 @@ target_link_libraries(camera ${OpenCV_LIBS})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build)
 
-set(NODE_SOURCES utils/test_node.cpp src/camera_imu_node.cpp)
+set(CAMERAIMU_SOURCES src/CameraIMU_main.cpp src/CameraIMU_node.cpp src/Camera.cpp)
 
-add_executable(test_node ${NODE_SOURCES})
+add_executable(CameraIMUNode ${TEST_SENSOR_SOURCES})
 
-ament_target_dependencies(test_node rclcpp sensor_msgs builtin_interfaces cv_bridge)
+ament_target_dependencies(CameraIMU rclcpp sensor_msgs sensor_msgs cv_bridge builtin_interfaces)
 
-target_link_libraries(test_node camera ${OpenCV_LIBS} MPU6050)
+target_link_libraries(CameraIMUNode camera ${OpenCV_LIBS} MPU6050)
 
 ament_package()
