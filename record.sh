@@ -6,7 +6,7 @@ do
 done
 
 splitsize=10000000000
-destination="~/projects/Data/raw/bagfiles"
+destination="~/war-projects/Data/raw/bagfiles"
 session_name="$(date '+%Y-%m-%d-T%H-%M-%S')-$session_name"
 
 $recording_path="$destination/$session_name"

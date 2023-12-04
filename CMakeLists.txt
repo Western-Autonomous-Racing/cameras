@@ -26,7 +26,7 @@ include_directories(
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
 # Add the source files
-set(CAMERA_SOURCES utils/test_camera.cpp src/camera.cpp)
+set(CAMERA_SOURCES utils/test_camera.cpp src/Camera.cpp)
 
 # Create the executables
 add_library(camera SHARED ${CAMERA_SOURCES})
@@ -36,11 +36,11 @@ target_link_libraries(camera ${OpenCV_LIBS})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build)
 
-set(CAMERAIMU_SOURCES src/CameraIMU_main.cpp src/CameraIMU_node.cpp src/Camera.cpp)
+set(CAMERAIMU_SOURCES src/CameraIMU_main.cpp src/CameraIMU_node.cpp)
 
-add_executable(CameraIMUNode ${TEST_SENSOR_SOURCES})
+add_executable(CameraIMUNode ${CAMERAIMU_SOURCES})
 
-ament_target_dependencies(CameraIMU rclcpp sensor_msgs sensor_msgs cv_bridge builtin_interfaces)
+ament_target_dependencies(CameraIMUNode rclcpp sensor_msgs std_msgs cv_bridge builtin_interfaces)
 
 target_link_libraries(CameraIMUNode camera ${OpenCV_LIBS} MPU6050)
 
