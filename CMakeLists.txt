@@ -1,12 +1,16 @@
 # Set the minimum required version of CMake
 cmake_minimum_required(VERSION 3.5)
 # Set the project name
-project(camera_imu)
+project(camera-imu)
 
 # set(CMAKE_BUILD_TYPE Debug)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -43,5 +47,7 @@ add_executable(CameraIMUNode ${CAMERAIMU_SOURCES})
 ament_target_dependencies(CameraIMUNode rclcpp sensor_msgs std_msgs cv_bridge builtin_interfaces)
 
 target_link_libraries(CameraIMUNode camera ${OpenCV_LIBS} MPU6050)
+
+install(TARGETS CameraIMUNode DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

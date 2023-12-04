@@ -6,20 +6,28 @@ do
 done
 
 splitsize=10000000000
-destination="~/war-projects/Data/raw/bagfiles"
+destination="/home/$(whoami)/war-projects/Data/raw/bagfiles"
 session_name="$(date '+%Y-%m-%d-T%H-%M-%S')-$session_name"
 
-$recording_path="$destination/$session_name"
+recording_path="$destination/$session_name"
 
 if [ ! -d "$recording_path" ]; then
-  mkdir $recording_path
+  mkdir -p "$recording_path"
 fi
 echo "Recording to $recording_path"
 
 cd ~/cameraimu_ws
 source install/setup.bash
-ros2 run camera_imu CameraIMU 
+ros2 run camera-imu CameraIMUNode &
 
-$recording_file="$recording_path/recording"
+recording_file="$recording_path/recording"
 
-ros2 bag record -o $recording_file --a -b $splitsize
+
+ros2 bag record -o "$recording_file" -a -b $splitsize &
+record_pid=$!
+
+# Add a trap to stop recording when the script is terminated
+trap 'kill $record_pid' SIGINT SIGTERM
+
+# Wait for the script to be terminated
+wait $record_pid

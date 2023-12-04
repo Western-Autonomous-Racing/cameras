@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>camera_imu</name>
+  <name>camera-imu</name>
   <version>1.0.0</version>
   <description>ROS2 wrapper for Camera and IMU library</description>
   <maintainer email="dxie33@uwo.ca">Daniel Xie</maintainer>

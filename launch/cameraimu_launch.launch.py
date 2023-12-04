@@ -4,9 +4,9 @@ from launch_ros.actions import Node
 def generate_launch_description():
 
     cameraimu_node = Node(
-            package='camera_imu',
-            executable='CameraIMU',
-            name='CameraIMU'
+            package='camera-imu',
+            executable='CameraIMUNode',
+            name='CameraIMUNode'
         )
 
     return LaunchDescription([
