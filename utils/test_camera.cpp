@@ -1,4 +1,4 @@
-#include "../include/camera.hpp"
+#include "../include/Camera.hpp"
 #include <opencv4/opencv2/opencv.hpp>
 
 using namespace std;

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>camera_imu</name>
+  <name>camera-imu</name>
   <version>1.0.0</version>
   <description>ROS2 wrapper for Camera and IMU library</description>
   <maintainer email="dxie33@uwo.ca">Daniel Xie</maintainer>
@@ -12,7 +12,9 @@
 
   <depend>rclcpp</depend>
   <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
   <depend>cv_bridge</depend>
+  <depend>builtin_interfaces</depend>
 
   <export>
     <build_type>ament_cmake</build_type>

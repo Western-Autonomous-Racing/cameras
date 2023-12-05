@@ -1,7 +1,7 @@
 #ifndef __CAMERA_IMU_NODE_HPP__
 #define __CAMERA_IMU_NODE_HPP__
 
-#include "camera.hpp"
+#include "Camera.hpp"
 #include <MPU6050.h>
 #include <rclcpp/rclcpp.hpp>
 #include <cv_bridge/cv_bridge.h>
