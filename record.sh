@@ -5,6 +5,12 @@ do
     esac
 done
 
+# if session is empty provide default name
+if [ -z "$session_name" ]
+then
+  session_name="recording"
+fi
+
 splitsize=10000000000
 destination="/home/$(whoami)/war-projects/Data/raw/bagfiles"
 session_name="$(date '+%Y-%m-%d-T%H-%M-%S')-$session_name"
