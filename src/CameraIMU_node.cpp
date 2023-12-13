@@ -11,15 +11,18 @@ Node("camera_imu_node", options)
     // Get the parameter values
     this->get_parameter("enable_imu", enable_imu);
     this->get_parameter("enable_camera", enable_camera);
+    
 
     // Initialize camera
     // Initialize publishers
     if (enable_camera) {
+        cout << "Initialize Camera" << endl;
         camera = Camera(true, MODE_2, true);
         imagePublisher = this->create_publisher<sensor_msgs::msg::Image>("/camera/image_raw", 100);
     }
 
     if (enable_imu) {
+        cout << "Initialize IMU" << endl;
         imu = MPU6050();
         imuPublisher = this->create_publisher<sensor_msgs::msg::Imu>("/imu", 1000);
     }

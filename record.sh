@@ -40,7 +40,7 @@ fi
 
 recording_file="$recording_path/recording"
 
-
+ros2 topic list
 ros2 bag record -o "$recording_file" -a -b $splitsize &
 record_pid=$!
 
@@ -51,6 +51,6 @@ trap 'kill $record_pid' SIGINT SIGTERM
 if [ "$imu_only" = false ] ; then
   wait $record_pid
 else
-  sleep 3h
+  sleep 7h
   kill $record_pid
 fi
