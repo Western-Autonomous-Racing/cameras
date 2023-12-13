@@ -14,6 +14,8 @@ fi
 if [ -z "$imu_only" ]
 then
   imu_only=false
+else
+  imu_only=true
 fi
 
 splitsize=10000000000

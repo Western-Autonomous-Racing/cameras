@@ -2,10 +2,16 @@
 #include <builtin_interfaces/msg/time.hpp>
 
 CameraImuNode::CameraImuNode(const rclcpp::NodeOptions & options) : 
-Node("camera_imu_node", options),
-enable_imu(this->declare_parameter<bool>("enable_imu", true)),
-enable_camera(this->declare_parameter<bool>("enable_imu", true))
+Node("camera_imu_node", options)
 {
+    // Declare the parameters
+    this->declare_parameter<bool>("enable_imu", true);
+    this->declare_parameter<bool>("enable_camera", true);
+
+    // Get the parameter values
+    this->get_parameter("enable_imu", enable_imu);
+    this->get_parameter("enable_camera", enable_camera);
+
     // Initialize camera
     // Initialize publishers
     if (enable_camera) {
