@@ -1,7 +1,8 @@
-while getopts s: flag
+while getopts s:i: flag
 do
     case "${flag}" in
         s) session_name=${OPTARG};;
+        i) imu_only=${OPTARG};;
     esac
 done
 
@@ -9,6 +10,10 @@ done
 if [ -z "$session_name" ]
 then
   session_name="recording"
+fi
+if [ -z "$imu_only" ]
+then
+  imu_only=false
 fi
 
 splitsize=10000000000
@@ -24,7 +29,12 @@ echo "Recording to $recording_path"
 
 cd ~/cameraimu_ws
 source install/setup.bash
-ros2 run camera-imu CameraIMUNode &
+
+if [ "$imu_only" = false ] ; then
+  ros2 run camera-imu CameraIMUNode &
+else
+  ros2 run camera-imu CameraIMUNode --ros-args -p enable_imu:=true -p enable_camera:=false &
+fi
 
 recording_file="$recording_path/recording"
 
@@ -36,4 +46,9 @@ record_pid=$!
 trap 'kill $record_pid' SIGINT SIGTERM
 
 # Wait for the script to be terminated
-wait $record_pid
+if [ "$imu_only" = false ] ; then
+  wait $record_pid
+else
+  sleep 3h
+  kill $record_pid
+fi
