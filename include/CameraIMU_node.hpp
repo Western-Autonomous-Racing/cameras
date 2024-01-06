@@ -15,6 +15,7 @@ using namespace std;
 class CameraImuNode : public rclcpp::Node
 {
 public:
+    CameraImuNode(const rclcpp::NodeOptions & options);
     CameraImuNode();
     ~CameraImuNode();
     void SyncandPublish();
@@ -25,6 +26,8 @@ public:
 private:
     Camera camera;
     MPU6050 imu;
+    bool enable_imu;    
+    bool enable_camera;
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr imagePublisher;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imuPublisher;
 };
