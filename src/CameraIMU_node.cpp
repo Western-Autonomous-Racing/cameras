@@ -25,14 +25,14 @@ void CameraImuNode::SyncandPublish()
 {
     while (rclcpp::ok())
     {
-        float ax, ay, az, gr, gp, gy;
+        float ax, ay, az, gr, gp, gy, temp;
         long long imu_ts;
         // Get image
         mMutex.lock();
 
         Frame image = camera.getFrame();
         // Get IMU data
-        imu.getIMU(&ax, &ay, &az, &gr, &gp, &gy, &imu_ts);
+        imu.getIMU(&ax, &ay, &az, &gr, &gp, &gy, &temp, &imu_ts);
 
         mMutex.unlock();
 
