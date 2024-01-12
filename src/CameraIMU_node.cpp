@@ -57,6 +57,10 @@ void CameraImuNode::SyncandPublish()
         imuMsg.orientation.z = 0.0;
         imuMsg.orientation.w = 1.0;
 
+        imuMsg.angular_velocity_covariance = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+        imuMsg.linear_acceleration_covariance = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+        imuMsg.orientation_covariance = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
         imagePublisher->publish(*cvImage.toImageMsg());
         imuPublisher->publish(imuMsg);
     }    
