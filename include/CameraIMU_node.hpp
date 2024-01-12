@@ -18,9 +18,11 @@ public:
     CameraImuNode();
     ~CameraImuNode();
     void SyncandPublish();
+    void CameraThreadFunc();
+    void ImuThreadFunc();
 
-    mutex mMutex;
-    thread *mThread;
+    thread *cameraThread;
+    thread *imuThread;
 
 private:
     Camera camera;

@@ -11,35 +11,45 @@ imu()
     imagePublisher = this->create_publisher<sensor_msgs::msg::Image>("/camera/image_raw", 100);
     imuPublisher = this->create_publisher<sensor_msgs::msg::Imu>("/imu", 1000);
 
-    // Start thread
-    mThread = new thread(&CameraImuNode::SyncandPublish, this);
+    // Start threads
+    cameraThread = new thread(&CameraImuNode::CameraThreadFunc, this);
+    imuThread = new thread(&CameraImuNode::ImuThreadFunc, this);
 }
 
 CameraImuNode::~CameraImuNode()
 {
-    mThread->join();
-    delete mThread;
+    // Join threads
+    cameraThread->join();
+    imuThread->join();
+
+    // Delete threads
+    delete cameraThread;
+    delete imuThread;
 }
 
-void CameraImuNode::SyncandPublish()
+void CameraImuNode::CameraThreadFunc()
 {
     while (rclcpp::ok())
     {
-        float ax, ay, az, gr, gp, gy, temp;
-        long long imu_ts;
         // Get image
-        mMutex.lock();
-
         Frame image = camera.getFrame();
-        // Get IMU data
-        imu.getIMU(&ax, &ay, &az, &gr, &gp, &gy, &temp, &imu_ts);
-
-        mMutex.unlock();
 
         // Publish image
         cv_bridge::CvImage cvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image.frame);
         cvImage.header.stamp = rclcpp::Time(image.timestamp);
-        
+        imagePublisher->publish(*cvImage.toImageMsg());
+    }
+}
+
+void CameraImuNode::ImuThreadFunc()
+{
+    while (rclcpp::ok())
+    {
+        // Get IMU data
+        float ax, ay, az, gr, gp, gy, temp;
+        long long imu_ts;
+        imu.getIMU(&ax, &ay, &az, &gr, &gp, &gy, &temp, &imu_ts);
+
         // Publish IMU data
         sensor_msgs::msg::Imu imuMsg = sensor_msgs::msg::Imu();
         imuMsg.header.stamp = rclcpp::Time(imu_ts);
@@ -61,8 +71,6 @@ void CameraImuNode::SyncandPublish()
         imuMsg.linear_acceleration_covariance = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
         imuMsg.orientation_covariance = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
-        imagePublisher->publish(*cvImage.toImageMsg());
         imuPublisher->publish(imuMsg);
-    }    
-
+    }
 }
