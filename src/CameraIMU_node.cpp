@@ -29,13 +29,15 @@ CameraImuNode::~CameraImuNode()
 
 void CameraImuNode::CameraThreadFunc()
 {
-    while (rclcpp::ok())
+    Frame image;
+    cv_bridge::CvImage cvImage;
+    while (1)
     {
         // Get image
-        Frame image = camera.getFrame();
+        image = camera.getFrame();
 
         // Publish image
-        cv_bridge::CvImage cvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image.frame);
+        cvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image.frame);
         cvImage.header.stamp = rclcpp::Time(image.timestamp);
         imagePublisher->publish(*cvImage.toImageMsg());
     }
@@ -43,11 +45,12 @@ void CameraImuNode::CameraThreadFunc()
 
 void CameraImuNode::ImuThreadFunc()
 {
-    while (rclcpp::ok())
+    float ax, ay, az, gr, gp, gy, temp;
+    long long imu_ts;
+    while (1)
     {
         // Get IMU data
-        float ax, ay, az, gr, gp, gy, temp;
-        long long imu_ts;
+        
         imu.getIMU(&ax, &ay, &az, &gr, &gp, &gy, &temp, &imu_ts);
 
         // Publish IMU data
