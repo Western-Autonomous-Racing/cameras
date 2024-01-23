@@ -28,7 +28,6 @@ ros2 run camera-imu CameraIMUNode &
 
 recording_file="$recording_path/recording"
 
-
 ros2 bag record -o "$recording_file" -a -b $splitsize &
 record_pid=$!
 

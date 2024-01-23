@@ -66,6 +66,7 @@ Frame Camera::getFrame()
     // cv::medianBlur(image, image, 5);
 
     // You can use the timestamp as needed
+    // cout << "Image timestamp: " << timestamp << endl;
 
-    return Frame{frame, timestamp};
+    return image;
     }
