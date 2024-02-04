@@ -10,10 +10,10 @@ imu()
 {
     // Initialize camera
     // Initialize publishers
-    // rclcpp::QoS qos_cam(rclcpp::KeepLast(10));
-    // rclcpp::QoS qos_imu(rclcpp::KeepLast(100));
-    imagePublisher = this->create_publisher<sensor_msgs::msg::Image>("/camera/image_raw", 100);
-    imuPublisher = this->create_publisher<sensor_msgs::msg::Imu>("/imu", 1000);
+    rclcpp::QoS qos_cam(rclcpp::KeepLast(100));
+    rclcpp::QoS qos_imu(rclcpp::KeepLast(1000));
+    imagePublisher = this->create_publisher<sensor_msgs::msg::Image>("/camera/image_raw", qos_cam);
+    imuPublisher = this->create_publisher<sensor_msgs::msg::Imu>("/imu", qos_imu);
 
     // Start threads
     cameraThread = new thread(&CameraImuNode::CameraThreadFunc, this);

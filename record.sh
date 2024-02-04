@@ -1,8 +1,9 @@
-while getopts s: flag
+while getopts s:t: flag
 do
-    case "${flag}" in
-        s) session_name=${OPTARG};;
-    esac
+  case "${flag}" in
+    s) session_name=${OPTARG};;
+    t) topics=${OPTARG};;
+  esac
 done
 
 # if session is empty provide default name
@@ -27,12 +28,20 @@ source install/setup.bash
 ros2 run camera-imu CameraIMUNode &
 
 recording_file="$recording_path/recording"
+FS=' ' read -r -a topic_array <<< "$topics"
 
-ros2 bag record -o "$recording_file" -a -b $splitsize &
+# ros2 bag record -o "$recording_file" -b $splitsize "${topic_array[@]}" &
+ros2 bag record -o "$recording_file" "${topic_array[@]}" &
 record_pid=$!
 
 # Add a trap to stop recording when the script is terminated
 trap 'kill $record_pid' SIGINT SIGTERM
 
+# Ignore SIGINT and SIGTERM in the wait command
+trap '' SIGINT SIGTERM
+
 # Wait for the script to be terminated
 wait $record_pid
+
+# Reset the trap to the default behavior
+trap - SIGINT SIGTERM
