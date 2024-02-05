@@ -1,29 +1,33 @@
-#include "../include/RGBCamera.hpp"
+#include "../include/StereoCamera.hpp"
 #include <opencv4/opencv2/opencv.hpp>
 
 using namespace std;
 
 int main(int argc, char** argv)
 {
-    RGBCamera rgb_camera(true, MODE_2, true);
+    StereoCamera camera;
 
-    if (!rgb_camera.isOpened())
+    if (!camera.isOpened())
     {
-        cout << "RGBCamera failed to open" << endl;
+        cout << "Camera failed to open" << endl;
         return -1;
     }
 
     while (1)
     {
-        RGBFrame img = rgb_camera.getFrame();
+        cv::Mat left = camera.getLeftFrame();
+        cv::Mat right = camera.getRightFrame();
 
-        if (img.frame.empty())
+        if (left.empty() && right.empty())
         {
             cout << "Frame is empty" << endl;
             break;
         }
 
-        cv::imshow("Frame", img.frame);
+        cv::Mat img;
+        cv::hconcat(left, right, img);
+
+        cv::imshow("Frame", img);
         int key = cv::waitKey(1);
 
         if (key == 'q')

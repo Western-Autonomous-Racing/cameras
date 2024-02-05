@@ -7,8 +7,8 @@
 //  - set grayscale or RGB
 //  - set camera mode
 
-#ifndef __CAMERA_HPP__
-#define __CAMERA_HPP__
+#ifndef __RGBCAMERA_HPP__
+#define __RGBCAMERA_HPP__
 
 #define GRAYSCALE "NV12"
 #define RGB "BGRx"
@@ -34,7 +34,7 @@ struct CameraConfig {
     string framerate;
 };
 
-struct Frame {
+struct RGBFrame {
     cv::Mat frame;
     long long timestamp;
 };
@@ -42,20 +42,20 @@ struct Frame {
 extern std::map<CameraMode, CameraConfig> cameraConfigs;
 
 
-class Camera
+class RGBCamera
 {
     // pipeline: "nvarguscamerasrc sensor-mode=2 ! video/x-raw(memory:NVMM),width=1920,height=1080,format=(string)NV12,framerate=(fraction)30/1 ! "
     //           "nvvidconv ! video/x-raw, format=(string)BGRx ! videoconvert ! videoflip method=rotate-180  ! appsink"
 
     public:
-        Camera(bool isColor, CameraMode mode, bool vflip);
-        Camera();
-        ~Camera();
+        RGBCamera(bool isColor, CameraMode mode, bool vflip);
+        RGBCamera();
+        ~RGBCamera();
 
         bool isOpened() const;
-        Frame getFrame();
+        RGBFrame getFrame();
         void setPipeline();
-        Frame image;
+        RGBFrame image;
 
     private:
         bool isColor;
@@ -65,4 +65,4 @@ class Camera
         bool vflip;
 };
 
-    #endif
+#endif

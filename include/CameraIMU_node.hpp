@@ -1,7 +1,8 @@
 #ifndef __CAMERA_IMU_NODE_HPP__
 #define __CAMERA_IMU_NODE_HPP__
 
-#include "Camera.hpp"
+#include "RGBCamera.hpp"
+#include "StereoCamera.hpp"
 #include <MPU6050.h>
 #include <rclcpp/rclcpp.hpp>
 #include <cv_bridge/cv_bridge.h>
@@ -18,16 +19,20 @@ public:
     CameraImuNode();
     ~CameraImuNode();
     void SyncandPublish();
-    void CameraThreadFunc();
+    void RGBCameraThreadFunc();
+    void StereoCameraThreadFunc();
     void ImuThreadFunc();
 
     thread *cameraThread;
     thread *imuThread;
 
 private:
-    Camera camera;
+    RGBCamera rgb_camera;
+    StereoCamera stereo_camera;
     MPU6050 imu;
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr imagePublisher;
+    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr rgbImagePublisher;
+    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr leftStereoPublisher;
+    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr rightStereoPublisher;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imuPublisher;
 };
 

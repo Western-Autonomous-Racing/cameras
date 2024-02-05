@@ -19,6 +19,7 @@ find_package(std_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(builtin_interfaces REQUIRED)
+find_package(realsense2 REQUIRED)
 
 # Include OpenCV headers
 include_directories(
@@ -30,13 +31,18 @@ include_directories(
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
 # Add the source files
-set(CAMERA_SOURCES utils/test_camera.cpp src/Camera.cpp)
+set(RGBCAMERA_SOURCES utils/test_camera.cpp src/RGBCamera.cpp)
+
+set(STEREOCAMERA_SOURCES utils/test_stereo.cpp src/StereoCamera.cpp)
 
 # Create the executables
-add_library(camera SHARED ${CAMERA_SOURCES})
+add_library(rgbcamera SHARED ${RGBCAMERA_SOURCES})
+add_library(stereocamera SHARED ${STEREOCAMERA_SOURCES})
+
 
 # Link the OpenCV libraries to your executables
-target_link_libraries(camera ${OpenCV_LIBS})
+target_link_libraries(rgbcamera ${OpenCV_LIBS})
+target_link_libraries(stereocamera ${OpenCV_LIBS} ${realsense2_LIBRARY})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build)
 
@@ -46,7 +52,7 @@ add_executable(CameraIMUNode ${CAMERAIMU_SOURCES})
 
 ament_target_dependencies(CameraIMUNode rclcpp sensor_msgs std_msgs cv_bridge builtin_interfaces)
 
-target_link_libraries(CameraIMUNode camera ${OpenCV_LIBS} MPU6050)
+target_link_libraries(CameraIMUNode camera ${OpenCV_LIBS} MPU6050 stereocamera)
 
 install(TARGETS CameraIMUNode DESTINATION lib/${PROJECT_NAME})
 

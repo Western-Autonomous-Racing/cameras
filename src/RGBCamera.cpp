@@ -1,6 +1,6 @@
 // Author : Daniel Xie
 
-#include "../include/Camera.hpp"
+#include "../include/RGBCamera.hpp"
 #include <opencv2/opencv.hpp>
 #include <chrono>
 
@@ -12,7 +12,7 @@ std::map<CameraMode, CameraConfig> cameraConfigs = {
     {MODE_4, {4, "1280", "720", "60"}}
 };
 
-Camera::Camera(bool isColor, CameraMode mode, bool vflip) : isColor(isColor), mode(mode), vflip(vflip)
+RGBCamera::RGBCamera(bool isColor, CameraMode mode, bool vflip) : isColor(isColor), mode(mode), vflip(vflip)
 {
     setPipeline();
 
@@ -20,22 +20,22 @@ Camera::Camera(bool isColor, CameraMode mode, bool vflip) : isColor(isColor), mo
 
     if (!cap.isOpened())
     {
-        std::cout << "Camera failed to open" << std::endl;
+        std::cout << "RGBCamera failed to open" << std::endl;
     }
     else
     {
-        std::cout << "Camera opened successfully" << std::endl;
+        std::cout << "RGBCamera opened successfully" << std::endl;
     }
 }
 
-Camera::Camera() : Camera(true, MODE_2, true) {}
+RGBCamera::RGBCamera() : RGBCamera(true, MODE_2, true) {}
 
-Camera::~Camera()
+RGBCamera::~RGBCamera()
 {
     cap.release();
 }
 
-void Camera::setPipeline()
+void RGBCamera::setPipeline()
 {
     this->isColor = isColor;
     this->mode = mode;
@@ -48,25 +48,25 @@ void Camera::setPipeline()
     cout << "Pipeline: " << pipeline << endl;
 }
 
-bool Camera::isOpened() const
+bool RGBCamera::isOpened() const
 {
     return cap.isOpened();
 }
 
-Frame Camera::getFrame()
+RGBFrame RGBCamera::getFrame()
 {
-    cv::Mat frame;
-    cap >> frame;
+    cv::Mat image;
+    cap >> image;
     long long timestamp = chrono::time_point_cast<chrono::nanoseconds>(chrono::system_clock::now()).time_since_epoch().count();
-    Frame image{frame, timestamp};
+    RGBFrame frame{image, timestamp};
 
-    if (frame.empty())
-        return Frame{cv::Mat(), -1};
+    if (image.empty())
+        return RGBFrame{cv::Mat(), -1};
 
     // cv::medianBlur(image, image, 5);
 
     // You can use the timestamp as needed
     // cout << "Image timestamp: " << timestamp << endl;
 
-    return image;
+    return frame;
     }
