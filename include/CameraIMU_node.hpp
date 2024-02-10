@@ -23,7 +23,8 @@ public:
     void StereoCameraThreadFunc();
     void ImuThreadFunc();
 
-    thread *cameraThread;
+    thread *rgbCameraThread;
+    thread *stereoCameraThread;
     thread *imuThread;
 
 private:

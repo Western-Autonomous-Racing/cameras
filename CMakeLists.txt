@@ -24,6 +24,7 @@ find_package(realsense2 REQUIRED)
 # Include OpenCV headers
 include_directories(
     ${OpenCV_INCLUDE_DIRS}
+    ${rclcpp_INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}/include
     /usr/include
 )
@@ -52,7 +53,7 @@ add_executable(CameraIMUNode ${CAMERAIMU_SOURCES})
 
 ament_target_dependencies(CameraIMUNode rclcpp sensor_msgs std_msgs cv_bridge builtin_interfaces)
 
-target_link_libraries(CameraIMUNode camera ${OpenCV_LIBS} MPU6050 stereocamera)
+target_link_libraries(CameraIMUNode rgbcamera ${OpenCV_LIBS} MPU6050 stereocamera)
 
 install(TARGETS CameraIMUNode DESTINATION lib/${PROJECT_NAME})
 

@@ -21,18 +21,21 @@ imu()
     imuPublisher = this->create_publisher<sensor_msgs::msg::Imu>("/imu", qos_imu);
 
     // Start threads
-    cameraThread = new thread(&CameraImuNode::RGBCameraThreadFunc, this);
+    rgbCameraThread = new thread(&CameraImuNode::RGBCameraThreadFunc, this);
+    stereoCameraThread = new thread(&CameraImuNode::StereoCameraThreadFunc, this);
     imuThread = new thread(&CameraImuNode::ImuThreadFunc, this);
 }
 
 CameraImuNode::~CameraImuNode()
 {
     // Join threads
-    cameraThread->join();
+    rgbCameraThread->join();
+    stereoCameraThread->join();
     imuThread->join();
 
     // Delete threads
-    delete cameraThread;
+    delete rgbCameraThread;
+    delete stereoCameraThread;
     delete imuThread;
 }
 
@@ -49,6 +52,8 @@ void CameraImuNode::RGBCameraThreadFunc()
 
         // Get image
         image = rgb_camera.getFrame();
+        // cv::imshow("RGB Camera", image.frame);
+        // cv::waitKey(1);
         // cout << "Image timestamp: " << image.timestamp << endl;
 
         cvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image.frame);
@@ -78,13 +83,17 @@ void CameraImuNode::StereoCameraThreadFunc()
 
         // Get images
         leftImage = stereo_camera.getLeftFrame();
+        // cv::imshow("Left Stereo Camera", leftImage.frame);
+        // cv::waitKey(1);
         rightImage = stereo_camera.getRightFrame();
-
-        leftCvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", leftImage.frame);
+        // cv::imshow("Right Stereo Camera", rightImage.frame);
+        // cv::waitKey(1);
+    
+        leftCvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "mono8", leftImage.frame);
         leftCvImage.header.stamp = rclcpp::Time(leftImage.timestamp);
         leftStereoPublisher->publish(*leftCvImage.toImageMsg());
 
-        rightCvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", rightImage.frame);
+        rightCvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "mono8", rightImage.frame);
         rightCvImage.header.stamp = rclcpp::Time(rightImage.timestamp);
         rightStereoPublisher->publish(*rightCvImage.toImageMsg());
 

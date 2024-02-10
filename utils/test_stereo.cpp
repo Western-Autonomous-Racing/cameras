@@ -15,17 +15,17 @@ int main(int argc, char** argv)
 
     while (1)
     {
-        cv::Mat left = camera.getLeftFrame();
-        cv::Mat right = camera.getRightFrame();
+        StereoFrame left = camera.getLeftFrame();
+        StereoFrame right = camera.getRightFrame();
 
-        if (left.empty() && right.empty())
+        if (left.frame.empty() && right.frame.empty())
         {
             cout << "Frame is empty" << endl;
             break;
         }
 
         cv::Mat img;
-        cv::hconcat(left, right, img);
+        cv::hconcat(left.frame, right.frame, img);
 
         cv::imshow("Frame", img);
         int key = cv::waitKey(1);
