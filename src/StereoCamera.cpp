@@ -27,6 +27,9 @@ StereoCamera::StereoCamera()
 StereoCamera::~StereoCamera()
 {
     is_opened = false;
+    camThread->join();
+
+    delete camThread;
     try {
         pipe.stop();
     } catch (const rs2::error & e) {

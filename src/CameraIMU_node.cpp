@@ -52,9 +52,6 @@ void CameraImuNode::RGBCameraThreadFunc()
 
         // Get image
         image = rgb_camera.getFrame();
-        // cv::imshow("RGB Camera", image.frame);
-        // cv::waitKey(1);
-        // cout << "Image timestamp: " << image.timestamp << endl;
 
         cvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image.frame);
         cvImage.header.stamp = rclcpp::Time(image.timestamp);
@@ -62,7 +59,6 @@ void CameraImuNode::RGBCameraThreadFunc()
 
         auto end = std::chrono::high_resolution_clock::now(); // Stop the timer
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); // Calculate the duration in microseconds
-        // std::cout << "RGBCameraThreadFunc duration: " << duration.count() << " microseconds" << std::endl;
 
     }
     // auto t_end = std::chrono::high_resolution_clock::now();
@@ -83,12 +79,8 @@ void CameraImuNode::StereoCameraThreadFunc()
 
         // Get images
         leftImage = stereo_camera.getLeftFrame();
-        // cv::imshow("Left Stereo Camera", leftImage.frame);
-        // cv::waitKey(1);
         rightImage = stereo_camera.getRightFrame();
-        // cv::imshow("Right Stereo Camera", rightImage.frame);
-        // cv::waitKey(1);
-    
+
         leftCvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "mono8", leftImage.frame);
         leftCvImage.header.stamp = rclcpp::Time(leftImage.timestamp);
         leftStereoPublisher->publish(*leftCvImage.toImageMsg());
@@ -99,6 +91,11 @@ void CameraImuNode::StereoCameraThreadFunc()
 
         auto end = std::chrono::high_resolution_clock::now(); // Stop the timer
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); // Calculate the duration in microseconds
+
+        // Delay to achieve 30 fps
+        std::chrono::microseconds targetDelay(1000000 / 30); // 30 fps
+        std::this_thread::sleep_for(targetDelay - duration);
+
         // std::cout << "StereoCameraThreadFunc duration: " << duration.count() << " microseconds" << std::endl;
     }
     // auto t_end = std::chrono::high_resolution_clock::now();
