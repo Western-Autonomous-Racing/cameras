@@ -13,7 +13,9 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclpy REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
@@ -56,5 +58,11 @@ ament_target_dependencies(CameraIMUNode rclcpp sensor_msgs std_msgs cv_bridge bu
 target_link_libraries(CameraIMUNode rgbcamera ${OpenCV_LIBS} MPU6050 stereocamera)
 
 install(TARGETS CameraIMUNode DESTINATION lib/${PROJECT_NAME})
+
+ament_python_install_package(${PROJECT_NAME})
+
+install(PROGRAMS py_src/imu_node.py DESTINATION lib/${PROJECT_NAME})
+
+install(DIRECTORY launch/ DESTINATION share/${PROJECT_NAME}/)
 
 ament_package()

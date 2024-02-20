@@ -1,7 +1,7 @@
-cd ThirdParty/MPU6050-Jetson-Orin
-make uninstall
-make install
-make example
+# cd ThirdParty/MPU6050-Jetson-Orin
+# make uninstall
+# make install
+# make example
 
 cd ~/cameraimu_ws
 rm -rf build
@@ -13,6 +13,9 @@ rm -rf camera-imu
 rm -rf build
 rm -rf lib
 ros2 pkg create camera-imu --dependencies rclcpp sensor_msgs std_msgs cv_bridge builtin_interfaces --build-type ament_cmake
+
+touch camera-imu/__init__.py
+touch camera-imu/module_to_import.py
 
 cd ~/cameraimu_ws
 colcon build --packages-select camera-imu

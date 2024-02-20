@@ -8,7 +8,14 @@ def generate_launch_description():
             executable='CameraIMUNode',
             name='CameraIMUNode'
         )
-
+    
+    imu_node = Node(
+            package='camera-imu',
+            executable='IMUNode',
+            name='IMUNode'
+        )
+    
     return LaunchDescription([
-        cameraimu_node
+        cameraimu_node,
+        imu_node
     ])

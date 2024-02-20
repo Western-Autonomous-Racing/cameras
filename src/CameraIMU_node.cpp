@@ -6,8 +6,8 @@
 CameraImuNode::CameraImuNode() : 
 Node("camera_imu_node"),  
 rgb_camera(true, MODE_2, true),
-stereo_camera(),
-imu()
+stereo_camera()//,
+// imu()
 {
     // Initialize rgb_camera
     // Initialize stereo_camera
@@ -18,12 +18,12 @@ imu()
     rgbImagePublisher = this->create_publisher<sensor_msgs::msg::Image>("/rgb_camera/color/image_raw", qos_cam);
     leftStereoPublisher = this->create_publisher<sensor_msgs::msg::Image>("/stereo_camera/left/image_raw", qos_cam);
     rightStereoPublisher = this->create_publisher<sensor_msgs::msg::Image>("/stereo_camera/right/image_raw", qos_cam);
-    imuPublisher = this->create_publisher<sensor_msgs::msg::Imu>("/imu", qos_imu);
+    // imuPublisher = this->create_publisher<sensor_msgs::msg::Imu>("/imu", qos_imu); //deprecate
 
     // Start threads
     rgbCameraThread = new thread(&CameraImuNode::RGBCameraThreadFunc, this);
     stereoCameraThread = new thread(&CameraImuNode::StereoCameraThreadFunc, this);
-    imuThread = new thread(&CameraImuNode::ImuThreadFunc, this);
+    // imuThread = new thread(&CameraImuNode::ImuThreadFunc, this);
 }
 
 CameraImuNode::~CameraImuNode()
@@ -31,12 +31,12 @@ CameraImuNode::~CameraImuNode()
     // Join threads
     rgbCameraThread->join();
     stereoCameraThread->join();
-    imuThread->join();
+    // imuThread->join();
 
     // Delete threads
     delete rgbCameraThread;
     delete stereoCameraThread;
-    delete imuThread;
+    // delete imuThread;
 }
 
 void CameraImuNode::RGBCameraThreadFunc()
@@ -103,52 +103,52 @@ void CameraImuNode::StereoCameraThreadFunc()
     // std::cout << "StereoCamera Frames per second: " << frames / (t_duration.count() / 1000000.0) << std::endl;
 }
 
-void CameraImuNode::ImuThreadFunc()
-{
-    float ax, ay, az, gr, gp, gy, temp;
-    long long imu_ts;
-    auto t_start = std::chrono::high_resolution_clock::now();
-    int frames = 0;
+// void CameraImuNode::ImuThreadFunc()
+// {
+//     float ax, ay, az, gr, gp, gy, temp;
+//     long long imu_ts;
+//     auto t_start = std::chrono::high_resolution_clock::now();
+//     int frames = 0;
 
-    while (rclcpp::ok())
-    {
-        frames++;
-        auto start = std::chrono::high_resolution_clock::now(); // Start the timer
+//     while (rclcpp::ok())
+//     {
+//         frames++;
+//         auto start = std::chrono::high_resolution_clock::now(); // Start the timer
 
-        // Get IMU data
-        imu.getIMU(&ax, &ay, &az, &gr, &gp, &gy, &temp, &imu_ts);
+//         // Get IMU data
+//         imu.getIMU(&ax, &ay, &az, &gr, &gp, &gy, &temp, &imu_ts);
 
-        // Publish IMU data
-        sensor_msgs::msg::Imu imuMsg = sensor_msgs::msg::Imu();
-        imuMsg.header.stamp = rclcpp::Time(imu_ts);
+//         // Publish IMU data
+//         sensor_msgs::msg::Imu imuMsg = sensor_msgs::msg::Imu();
+//         imuMsg.header.stamp = rclcpp::Time(imu_ts);
 
-        imuMsg.linear_acceleration.x = ax;
-        imuMsg.linear_acceleration.y = ay;
-        imuMsg.linear_acceleration.z = az;
+//         imuMsg.linear_acceleration.x = ax;
+//         imuMsg.linear_acceleration.y = ay;
+//         imuMsg.linear_acceleration.z = az;
 
-        imuMsg.angular_velocity.x = gr;
-        imuMsg.angular_velocity.y = gp;
-        imuMsg.angular_velocity.z = gy;
+//         imuMsg.angular_velocity.x = gr;
+//         imuMsg.angular_velocity.y = gp;
+//         imuMsg.angular_velocity.z = gy;
 
-        imuMsg.orientation.x = 0.0;
-        imuMsg.orientation.y = 0.0;
-        imuMsg.orientation.z = 0.0;
-        imuMsg.orientation.w = 1.0;
+//         imuMsg.orientation.x = 0.0;
+//         imuMsg.orientation.y = 0.0;
+//         imuMsg.orientation.z = 0.0;
+//         imuMsg.orientation.w = 1.0;
 
-        imuMsg.angular_velocity_covariance = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-        imuMsg.linear_acceleration_covariance = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-        imuMsg.orientation_covariance = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+//         imuMsg.angular_velocity_covariance = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+//         imuMsg.linear_acceleration_covariance = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+//         imuMsg.orientation_covariance = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
-        imuPublisher->publish(imuMsg);
+//         imuPublisher->publish(imuMsg);
 
-        // auto end = std::chrono::high_resolution_clock::now(); // Stop the timer
-        // auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); // Calculate the duration in microseconds
-        // std::cout << "IMU Msg linear acceleration: " << imuMsg.linear_acceleration.x << ", " << imuMsg.linear_acceleration.y << ", " << imuMsg.linear_acceleration.z << std::endl;
-        // std::cout << "IMU Msg angular velocity: " << imuMsg.angular_velocity.x << ", " << imuMsg.angular_velocity.y << ", " << imuMsg.angular_velocity.z << std::endl;
-        // std::cout << "ImuThreadFunc duration: " << duration.count() << " microseconds" << std::endl;
-    }
+//         // auto end = std::chrono::high_resolution_clock::now(); // Stop the timer
+//         // auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); // Calculate the duration in microseconds
+//         // std::cout << "IMU Msg linear acceleration: " << imuMsg.linear_acceleration.x << ", " << imuMsg.linear_acceleration.y << ", " << imuMsg.linear_acceleration.z << std::endl;
+//         // std::cout << "IMU Msg angular velocity: " << imuMsg.angular_velocity.x << ", " << imuMsg.angular_velocity.y << ", " << imuMsg.angular_velocity.z << std::endl;
+//         // std::cout << "ImuThreadFunc duration: " << duration.count() << " microseconds" << std::endl;
+//     }
 
-    // auto t_end = std::chrono::high_resolution_clock::now();
-    // auto t_duration = std::chrono::duration_cast<std::chrono::microseconds>(t_end - t_start);
-    // std::cout << "IMU Frames per second: " << frames / (t_duration.count() / 1000000.0) << std::endl;
-}
+//    // auto t_end = std::chrono::high_resolution_clock::now();
+//    // auto t_duration = std::chrono::duration_cast<std::chrono::microseconds>(t_end - t_start);
+//    // std::cout << "IMU Frames per second: " << frames / (t_duration.count() / 1000000.0) << std::endl;
+// }

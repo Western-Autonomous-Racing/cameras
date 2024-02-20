@@ -32,6 +32,7 @@ echo "Recording to $recording_path"
 cd ~/cameraimu_ws
 source install/setup.bash
 ros2 run camera-imu CameraIMUNode &
+ros2 run camera-imu imu_node.py &
 
 recording_file="$recording_path/recording"
 FS=' ' read -r -a topic_array <<< "$topics"
