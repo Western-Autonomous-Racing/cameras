@@ -57,11 +57,11 @@ RGBFrame RGBCamera::getFrame()
 {
     cv::Mat image;
     cap >> image;
-    long long timestamp = chrono::time_point_cast<chrono::nanoseconds>(chrono::system_clock::now()).time_since_epoch().count();
+    rclcpp::Time timestamp = rclcpp::Clock().now();
     RGBFrame frame{image, timestamp};
 
     if (image.empty())
-        return RGBFrame{cv::Mat(), -1};
+        return RGBFrame{cv::Mat(), rclcpp::Time()};
 
     // cv::medianBlur(image, image, 5);
 
@@ -69,4 +69,4 @@ RGBFrame RGBCamera::getFrame()
     // cout << "Image timestamp: " << timestamp << endl;
 
     return frame;
-    }
+}

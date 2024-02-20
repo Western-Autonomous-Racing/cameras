@@ -37,8 +37,8 @@ recording_file="$recording_path/recording"
 FS=' ' read -r -a topic_array <<< "$topics"
 
 # ros2 bag record -o "$recording_file" -b $splitsize "${topic_array[@]}" &
-# ros2 bag record -o "$recording_file" "${topic_array[@]}" &
-ros2 bag record -a -o "$recording_file" &
+ros2 bag record -o "$recording_file" "${topic_array[@]}" &
+# ros2 bag record -a -o "$recording_file" &
 record_pid=$!
 
 # Add a trap to stop recording when the script is terminated

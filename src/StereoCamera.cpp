@@ -1,5 +1,4 @@
 #include "../include/StereoCamera.hpp"
-#include <rclcpp/rclcpp.hpp>
 
 
 StereoCamera::StereoCamera()
@@ -39,22 +38,22 @@ StereoCamera::~StereoCamera()
 
 StereoFrame StereoCamera::getLeftFrame()
 {
-    long long timestamp = chrono::time_point_cast<chrono::nanoseconds>(chrono::system_clock::now()).time_since_epoch().count();
+    rclcpp::Time timestamp = rclcpp::Clock().now();
     StereoFrame frame{leftFrame, timestamp};
 
     if (leftFrame.empty())
-        return StereoFrame{cv::Mat(), -1};
+        return StereoFrame{cv::Mat(), rclcpp::Time()}; // Return an empty rclcpp::Time object instead of nullptr
     
     return frame;
 }
 
 StereoFrame StereoCamera::getRightFrame()
 {
-    long long timestamp = chrono::time_point_cast<chrono::nanoseconds>(chrono::system_clock::now()).time_since_epoch().count();
+    rclcpp::Time timestamp = rclcpp::Clock().now();
     StereoFrame frame{rightFrame, timestamp};
 
     if (rightFrame.empty())
-        return StereoFrame{cv::Mat(), -1};
+        return StereoFrame{cv::Mat(), rclcpp::Time()};
 
     return frame;
 }
@@ -74,8 +73,8 @@ void StereoCamera::updateFrame()
             frames = pipe.wait_for_frames();
             
             // Get each frame
-            left = frames.get_infrared_frame(1);
-            right = frames.get_infrared_frame(2);
+            right = frames.get_infrared_frame(1);
+            left = frames.get_infrared_frame(2);
 
             const int l_width = left.as<rs2::video_frame>().get_width();
             const int l_height = left.as<rs2::video_frame>().get_height();

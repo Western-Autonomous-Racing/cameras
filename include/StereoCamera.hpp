@@ -5,12 +5,13 @@
 #include <opencv2/opencv.hpp>   // Include OpenCV API
 #include <thread>
 #include <csignal>
+#include <rclcpp/rclcpp.hpp>
 
 using namespace std;
 
 struct StereoFrame {
     cv::Mat frame;
-    long long timestamp;
+    rclcpp::Time timestamp;
 };
 
 class StereoCamera

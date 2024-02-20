@@ -41,7 +41,7 @@ while time.time_ns() - start < 10000000000:
         print("Temperature: %.2f C" % mpu.temperature)
         print("")
         n+=1
-        time.sleep(0.025)
+        # time.sleep(0.005)
         frame_time.append((time.time_ns() - start_frame)/1000000)
         
     except KeyboardInterrupt:

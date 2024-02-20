@@ -15,6 +15,7 @@
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/videoio.hpp>
+#include <rclcpp/rclcpp.hpp>
 #include <map>
 
 using namespace std;
@@ -36,7 +37,7 @@ struct CameraConfig {
 
 struct RGBFrame {
     cv::Mat frame;
-    long long timestamp;
+    rclcpp::Time timestamp;
 };
 
 extern std::map<CameraMode, CameraConfig> cameraConfigs;
