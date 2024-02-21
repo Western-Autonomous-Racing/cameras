@@ -19,8 +19,9 @@ class IMUNode(Node):
         self.imu = adafruit_mpu6050.MPU6050(board.I2C())
         self.running_thread = True
 
-        self.imu_thread = threading.Thread(target=self.publish_imu)
-        self.imu_thread.start()
+        self.publish_imu()
+        # self.imu_thread = threading.Thread(target=self.publish_imu)
+        # self.imu_thread.start()
 
     def publish_imu(self):
         while self.running_thread:
@@ -50,7 +51,7 @@ class IMUNode(Node):
 
     def on_shutdown(self):
         self.running_thread = False
-        self.imu_thread.join()
+        # self.imu_thread.join()
         
     
 if __name__ == '__main__':
