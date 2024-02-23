@@ -20,8 +20,8 @@ class IMUNode(Node):
         self.running_thread = True
 
         self.publish_imu()
-        # self.imu_thread = threading.Thread(target=self.publish_imu)
-        # self.imu_thread.start()
+        self.imu_thread = threading.Thread(target=self.publish_imu)
+        self.imu_thread.start()
 
     def publish_imu(self):
         while self.running_thread:
@@ -47,11 +47,11 @@ class IMUNode(Node):
             self.imu_publisher.publish(imu_msg)
 
             time_elapsed = time.time_ns() - start_time
-            time.sleep(max(0, 0.005 - time_elapsed/1000000000))
+            time.sleep(max(0, 0.005 - time_elapsed/1000000000.0))
 
     def on_shutdown(self):
         self.running_thread = False
-        # self.imu_thread.join()
+        self.imu_thread.join()
         
     
 if __name__ == '__main__':
@@ -60,7 +60,9 @@ if __name__ == '__main__':
     try:
         rclpy.spin(imu_node)
     except KeyboardInterrupt:
-        pass
+        imu_node.on_shutdown()
+        # imu_node.destroy_node()
+        rclpy.shutdown()
     finally:
         # Shutdown ROS and cleanup
         imu_node.on_shutdown()
