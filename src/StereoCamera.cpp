@@ -88,7 +88,7 @@ void StereoCamera::updateFrame()
             cv::flip(leftConv, leftFrame, -1);
             
             cv::Mat rightConv = cv::Mat(cv::Size(r_width, r_height), CV_8UC1, (void *)right.get_data(), cv::Mat::AUTO_STEP);
-            cv::flip(rightConv, rightFrame, -1);        
+            cv::flip(rightConv, rightFrame, -1);
 
             if (!leftFrame.empty() && !rightFrame.empty())
             {
