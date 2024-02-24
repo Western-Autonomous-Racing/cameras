@@ -18,14 +18,21 @@ class CameraImuNode : public rclcpp::Node
 public:
     CameraImuNode();
     ~CameraImuNode();
-    void SyncandPublish();
     void RGBCameraThreadFunc();
     void StereoCameraThreadFunc();
     void ImuThreadFunc();
 
+    void runImuThread();
+    void runRGBThread();
+    void runStereoThread();
+
     thread *rgbCameraThread;
     thread *stereoCameraThread;
     thread *imuThread;
+
+    rclcpp::TimerBase::SharedPtr rgbCameraTimer;
+    rclcpp::TimerBase::SharedPtr stereoCameraTimer;
+    rclcpp::TimerBase::SharedPtr imuTimer;
 
 private:
     RGBCamera rgb_camera;

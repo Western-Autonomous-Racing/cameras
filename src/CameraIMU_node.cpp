@@ -23,7 +23,8 @@ imu()
     // Start threads
     rgbCameraThread = new thread(&CameraImuNode::RGBCameraThreadFunc, this);
     stereoCameraThread = new thread(&CameraImuNode::StereoCameraThreadFunc, this);
-    imuThread = new thread(&CameraImuNode::ImuThreadFunc, this);
+    imuThread = new thread(&CameraImuNode::runImuThread, this);
+
 }
 
 CameraImuNode::~CameraImuNode()
@@ -39,16 +40,20 @@ CameraImuNode::~CameraImuNode()
     delete imuThread;
 }
 
+void CameraImuNode::runImuThread()
+{
+    imuTimer = this->create_wall_timer(std::chrono::milliseconds(5), std::bind(&CameraImuNode::ImuThreadFunc, this));
+}
+
 void CameraImuNode::RGBCameraThreadFunc()
 {
     RGBFrame image;
     cv_bridge::CvImage cvImage;
-    auto t_start = std::chrono::high_resolution_clock::now();
+    // auto t_start = std::chrono::high_resolution_clock::now();
     int frames = 0;
     while (rclcpp::ok())
     {
-        frames++;
-        auto start = std::chrono::high_resolution_clock::now(); // Start the timer
+        // auto start = std::chrono::high_resolution_clock::now(); // Start the timer
 
         // Get image
         image = rgb_camera.getFrame();
@@ -57,8 +62,8 @@ void CameraImuNode::RGBCameraThreadFunc()
         cvImage.header.stamp = rclcpp::Time(image.timestamp);
         rgbImagePublisher->publish(*cvImage.toImageMsg());
 
-        auto end = std::chrono::high_resolution_clock::now(); // Stop the timer
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); // Calculate the duration in microseconds
+        // auto end = std::chrono::high_resolution_clock::now(); // Stop the timer
+        // auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); // Calculate the duration in microseconds
 
     }
     // auto t_end = std::chrono::high_resolution_clock::now();
@@ -74,7 +79,6 @@ void CameraImuNode::StereoCameraThreadFunc()
     int frames = 0;
     while (rclcpp::ok())
     {
-        frames++;
         auto start = std::chrono::high_resolution_clock::now(); // Start the timer
 
         // Get images
@@ -110,10 +114,9 @@ void CameraImuNode::ImuThreadFunc()
     auto t_start = std::chrono::high_resolution_clock::now();
     int frames = 0;
 
-    while (rclcpp::ok())
-    {
-        frames++;
-        auto start = std::chrono::high_resolution_clock::now(); // Start the timer
+    // while (rclcpp::ok())
+    // {
+        // auto start = std::chrono::high_resolution_clock::now(); // Start the timer
 
         // Get IMU data
         imu.getIMU(&ax, &ay, &az, &gr, &gp, &gy, &temp, &imu_ts);
@@ -143,12 +146,9 @@ void CameraImuNode::ImuThreadFunc()
 
         // auto end = std::chrono::high_resolution_clock::now(); // Stop the timer
         // auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); // Calculate the duration in microseconds
-        // std::cout << "IMU Msg linear acceleration: " << imuMsg.linear_acceleration.x << ", " << imuMsg.linear_acceleration.y << ", " << imuMsg.linear_acceleration.z << std::endl;
-        // std::cout << "IMU Msg angular velocity: " << imuMsg.angular_velocity.x << ", " << imuMsg.angular_velocity.y << ", " << imuMsg.angular_velocity.z << std::endl;
-        // std::cout << "ImuThreadFunc duration: " << duration.count() << " microseconds" << std::endl;
-    }
+        // std::chrono::microseconds targetDelay(5000); // 200 fps
+        // std::this_thread::sleep_for(targetDelay - duration);
+        
 
-    // auto t_end = std::chrono::high_resolution_clock::now();
-    // auto t_duration = std::chrono::duration_cast<std::chrono::microseconds>(t_end - t_start);
-    // std::cout << "IMU Frames per second: " << frames / (t_duration.count() / 1000000.0) << std::endl;
+    // }
 }

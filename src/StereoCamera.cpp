@@ -19,6 +19,8 @@ StereoCamera::StereoCamera()
         depth_sensor.set_option(RS2_OPTION_EMITTER_ENABLED, 0.f); // Enable emitter
     }
 
+    cout << "Stereo Camera is opened" << endl;
+
     // Start the thread
     camThread = new std::thread(&StereoCamera::updateFrame, this);
 }
