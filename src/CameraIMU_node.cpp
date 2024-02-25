@@ -1,40 +1,35 @@
-#include <chrono>
 #include "CameraIMU_node.hpp"
 #include <builtin_interfaces/msg/time.hpp>
 #include <rclcpp/qos.hpp>
+#include <chrono>
 
 CameraImuNode::CameraImuNode() : 
-Node("camera_imu_node"),  
+Node("camera_imu_node"),
 rgb_camera(true, MODE_2, true),
 stereo_camera(),
 imu()
 {
-    // Initialize rgb_camera
-    // Initialize stereo_camera
-    // Initialize publishers
-    rclcpp::QoS qos_cam(rclcpp::KeepLast(100));
-    rclcpp::QoS qos_imu(rclcpp::KeepLast(1000));
+    rclcpp::QoS qos_cam(rclcpp::KeepLast(200));
+    rclcpp::QoS qos_imu(rclcpp::KeepLast(1500));
 
+    // Initialize publishers 
     rgbImagePublisher = this->create_publisher<sensor_msgs::msg::Image>("/rgb_camera/color/image_raw", qos_cam);
     leftStereoPublisher = this->create_publisher<sensor_msgs::msg::Image>("/stereo_camera/left/image_raw", qos_cam);
     rightStereoPublisher = this->create_publisher<sensor_msgs::msg::Image>("/stereo_camera/right/image_raw", qos_cam);
     imuPublisher = this->create_publisher<sensor_msgs::msg::Imu>("/imu", qos_imu);
 
-    // Start threads
+    // Initialize threads
     rgbCameraThread = new thread(&CameraImuNode::RGBCameraThreadFunc, this);
     stereoCameraThread = new thread(&CameraImuNode::StereoCameraThreadFunc, this);
     imuThread = new thread(&CameraImuNode::runImuThread, this);
-
 }
 
 CameraImuNode::~CameraImuNode()
 {
-    // Join threads
     rgbCameraThread->join();
     stereoCameraThread->join();
     imuThread->join();
 
-    // Delete threads
     delete rgbCameraThread;
     delete stereoCameraThread;
     delete imuThread;
@@ -65,15 +60,12 @@ void CameraImuNode::StereoCameraThreadFunc()
 {
     StereoFrame leftImage, rightImage;
     cv_bridge::CvImage leftCvImage, rightCvImage;
-    auto t_start = std::chrono::high_resolution_clock::now();
-    int frames = 0;
     while (rclcpp::ok())
     {
         auto start = std::chrono::high_resolution_clock::now(); // Start the timer
 
         // Get images
-        leftImage = stereo_camera.getLeftFrame();
-        rightImage = stereo_camera.getRightFrame();
+        stereo_camera.getFrames(&leftImage, &rightImage);
 
         leftCvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "mono8", leftImage.frame);
         leftCvImage.header.stamp = rclcpp::Time(leftImage.timestamp);
