@@ -18,29 +18,29 @@ class CameraImuNode : public rclcpp::Node
 public:
     CameraImuNode();
     ~CameraImuNode();
-    void RGBCameraThreadFunc();
-    void StereoCameraThreadFunc();
+    // void RGBCameraThreadFunc();
+    // void StereoCameraThreadFunc();
     void ImuThreadFunc();
 
     void runImuThread();
-    void runRGBThread();
-    void runStereoThread();
+    // void runRGBThread();
+    // void runStereoThread();
 
     thread *rgbCameraThread;
     thread *stereoCameraThread;
     thread *imuThread;
 
-    rclcpp::TimerBase::SharedPtr rgbCameraTimer;
-    rclcpp::TimerBase::SharedPtr stereoCameraTimer;
+    // rclcpp::TimerBase::SharedPtr rgbCameraTimer;
+    // rclcpp::TimerBase::SharedPtr stereoCameraTimer;
     rclcpp::TimerBase::SharedPtr imuTimer;
 
 private:
-    RGBCamera rgb_camera;
-    StereoCamera stereo_camera;
+    // RGBCamera rgb_camera;
+    // StereoCamera stereo_camera;
     MPU6050 imu;
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr rgbImagePublisher;
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr leftStereoPublisher;
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr rightStereoPublisher;
+    // rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr rgbImagePublisher;
+    // rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr leftStereoPublisher;
+    // rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr rightStereoPublisher;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imuPublisher;
 };
 

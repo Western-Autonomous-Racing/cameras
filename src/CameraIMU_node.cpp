@@ -5,33 +5,33 @@
 
 CameraImuNode::CameraImuNode() : 
 Node("camera_imu_node"),
-rgb_camera(true, MODE_2, true),
-stereo_camera(),
+// rgb_camera(true, MODE_2, true),
+// stereo_camera(),
 imu()
 {
-    rclcpp::QoS qos_cam(rclcpp::KeepLast(200));
+    // rclcpp::QoS qos_cam(rclcpp::KeepLast(200));
     rclcpp::QoS qos_imu(rclcpp::KeepLast(1500));
 
     // Initialize publishers 
-    rgbImagePublisher = this->create_publisher<sensor_msgs::msg::Image>("/rgb_camera/color/image_raw", qos_cam);
-    leftStereoPublisher = this->create_publisher<sensor_msgs::msg::Image>("/stereo_camera/left/image_raw", qos_cam);
-    rightStereoPublisher = this->create_publisher<sensor_msgs::msg::Image>("/stereo_camera/right/image_raw", qos_cam);
+    // rgbImagePublisher = this->create_publisher<sensor_msgs::msg::Image>("/rgb_camera/color/image_raw", qos_cam);
+    // leftStereoPublisher = this->create_publisher<sensor_msgs::msg::Image>("/stereo_camera/left/image_raw", qos_cam);
+    // rightStereoPublisher = this->create_publisher<sensor_msgs::msg::Image>("/stereo_camera/right/image_raw", qos_cam);
     imuPublisher = this->create_publisher<sensor_msgs::msg::Imu>("/imu", qos_imu);
 
     // Initialize threads
-    rgbCameraThread = new thread(&CameraImuNode::RGBCameraThreadFunc, this);
-    stereoCameraThread = new thread(&CameraImuNode::StereoCameraThreadFunc, this);
+    // rgbCameraThread = new thread(&CameraImuNode::RGBCameraThreadFunc, this);
+    // stereoCameraThread = new thread(&CameraImuNode::StereoCameraThreadFunc, this);
     imuThread = new thread(&CameraImuNode::runImuThread, this);
 }
 
 CameraImuNode::~CameraImuNode()
 {
-    rgbCameraThread->join();
-    stereoCameraThread->join();
+    // rgbCameraThread->join();
+    // stereoCameraThread->join();
     imuThread->join();
 
-    delete rgbCameraThread;
-    delete stereoCameraThread;
+    // delete rgbCameraThread;
+    // delete stereoCameraThread;
     delete imuThread;
 }
 
@@ -40,49 +40,49 @@ void CameraImuNode::runImuThread()
     imuTimer = this->create_wall_timer(std::chrono::milliseconds(5), std::bind(&CameraImuNode::ImuThreadFunc, this));
 }
 
-void CameraImuNode::RGBCameraThreadFunc()
-{
-    RGBFrame image;
-    cv_bridge::CvImage cvImage;
-    while (rclcpp::ok())
-    {
-        // Get image
-        image = rgb_camera.getFrame();
+// void CameraImuNode::RGBCameraThreadFunc()
+// {
+//     RGBFrame image;
+//     cv_bridge::CvImage cvImage;
+//     while (rclcpp::ok())
+//     {
+//         // Get image
+//         image = rgb_camera.getFrame();
 
-        cvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image.frame);
-        cvImage.header.stamp = rclcpp::Time(image.timestamp);
-        rgbImagePublisher->publish(*cvImage.toImageMsg());
+//         cvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image.frame);
+//         cvImage.header.stamp = rclcpp::Time(image.timestamp);
+//         rgbImagePublisher->publish(*cvImage.toImageMsg());
 
-    }
-}
+//     }
+// }
 
-void CameraImuNode::StereoCameraThreadFunc()
-{
-    StereoFrame leftImage, rightImage;
-    cv_bridge::CvImage leftCvImage, rightCvImage;
-    while (rclcpp::ok())
-    {
-        auto start = std::chrono::high_resolution_clock::now(); // Start the timer
+// void CameraImuNode::StereoCameraThreadFunc()
+// {
+//     StereoFrame leftImage, rightImage;
+//     cv_bridge::CvImage leftCvImage, rightCvImage;
+//     while (rclcpp::ok())
+//     {
+//         auto start = std::chrono::high_resolution_clock::now(); // Start the timer
 
-        // Get images
-        stereo_camera.getFrames(&leftImage, &rightImage);
+//         // Get images
+//         stereo_camera.getFrames(&leftImage, &rightImage);
 
-        leftCvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "mono8", leftImage.frame);
-        leftCvImage.header.stamp = rclcpp::Time(leftImage.timestamp);
-        leftStereoPublisher->publish(*leftCvImage.toImageMsg());
+//         leftCvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "mono8", leftImage.frame);
+//         leftCvImage.header.stamp = rclcpp::Time(leftImage.timestamp);
+//         leftStereoPublisher->publish(*leftCvImage.toImageMsg());
 
-        rightCvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "mono8", rightImage.frame);
-        rightCvImage.header.stamp = rclcpp::Time(rightImage.timestamp);
-        rightStereoPublisher->publish(*rightCvImage.toImageMsg());
+//         rightCvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "mono8", rightImage.frame);
+//         rightCvImage.header.stamp = rclcpp::Time(rightImage.timestamp);
+//         rightStereoPublisher->publish(*rightCvImage.toImageMsg());
 
-        auto end = std::chrono::high_resolution_clock::now(); // Stop the timer
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); // Calculate the duration in microseconds
+//         auto end = std::chrono::high_resolution_clock::now(); // Stop the timer
+//         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); // Calculate the duration in microseconds
 
-        // Delay to achieve 30 fps
-        std::chrono::microseconds targetDelay(1000000 / 30); // 30 fps
-        std::this_thread::sleep_for(targetDelay - duration);
-    }
-}
+//         // Delay to achieve 30 fps
+//         std::chrono::microseconds targetDelay(1000000 / 30); // 30 fps
+//         std::this_thread::sleep_for(targetDelay - duration);
+//     }
+// }
 
 void CameraImuNode::ImuThreadFunc()
 {
