@@ -26,44 +26,18 @@ StereoCamera::StereoCamera()
 
     cout << "Stereo Camera is opened" << endl;
 
-    // Start the thread
-    // camThread = new std::thread(&StereoCamera::updateFrame, this);
 }
 
 StereoCamera::~StereoCamera()
 {
     is_opened = false;
-    // camThread->join();
 
-    // delete camThread;
     try {
         pipe.stop();
     } catch (const rs2::error & e) {
         std::cerr << "Failed to stop the pipeline: " << e.what() << std::endl;
     }
 }
-
-// StereoFrame StereoCamera::getLeftFrame()
-// {
-//     rclcpp::Time timestamp = rclcpp::Clock().now();
-//     StereoFrame frame{leftImage, timestamp};
-
-//     if (leftImage.empty())
-//         return StereoFrame{cv::Mat(), rclcpp::Time()}; // Return an empty rclcpp::Time object instead of nullptr
-    
-//     return frame;
-// }
-
-// StereoFrame StereoCamera::getRightFrame()
-// {
-//     rclcpp::Time timestamp = rclcpp::Clock().now();
-//     StereoFrame frame{rightImage, timestamp};
-
-//     if (rightImage.empty())
-//         return StereoFrame{cv::Mat(), rclcpp::Time()};
-
-//     return frame;
-// }
 
 void StereoCamera::getFrames(StereoFrame *leftFrame, StereoFrame *rightFrame)
 {
@@ -73,7 +47,6 @@ void StereoCamera::getFrames(StereoFrame *leftFrame, StereoFrame *rightFrame)
 
     is_opened = true;
 
-    // try {
     // Wait for the next set of frames from the camera
     frames = pipe.wait_for_frames();
     
@@ -87,20 +60,14 @@ void StereoCamera::getFrames(StereoFrame *leftFrame, StereoFrame *rightFrame)
     const int r_height = right.as<rs2::video_frame>().get_height();
 
     // Convert the frames to OpenCV Mat
-    cv::Mat leftConv = cv::Mat(cv::Size(l_width, l_height), CV_8UC1, (void *)left.get_data(), cv::Mat::AUTO_STEP);
-    cv::flip(leftConv, leftImage, -1);
+    cv::Mat leftImage = cv::Mat(cv::Size(l_width, l_height), CV_8UC1, (void *)left.get_data(), cv::Mat::AUTO_STEP);
     
-    cv::Mat rightConv = cv::Mat(cv::Size(r_width, r_height), CV_8UC1, (void *)right.get_data(), cv::Mat::AUTO_STEP);
-    cv::flip(rightConv, rightImage, -1);
+    cv::Mat rightImage = cv::Mat(cv::Size(r_width, r_height), CV_8UC1, (void *)right.get_data(), cv::Mat::AUTO_STEP);
 
     if (!leftImage.empty() && !rightImage.empty())
     {
         is_opened = true;
     }
-    // } catch (const std::exception& e) {
-    //     // Handle the exception (e.g., log the error, clean up resources, etc.)
-    //     std::cerr << "Exception occurred in updateFrame: " << e.what() << std::endl;
-    // }
 
     rclcpp::Time timestamp = rclcpp::Clock().now();
 
@@ -113,47 +80,6 @@ void StereoCamera::getFrames(StereoFrame *leftFrame, StereoFrame *rightFrame)
     *leftFrame = StereoFrame{leftImage, timestamp};
     *rightFrame = StereoFrame{rightImage, timestamp};
 }
-
-// void StereoCamera::updateFrame()
-// {
-//     rs2::frameset frames;
-//     rs2::frame left;
-//     rs2::frame right;
-
-//     is_opened = true;
-
-//     try {
-//         while (rclcpp::ok())
-//         {
-//             // Wait for the next set of frames from the camera
-//             frames = pipe.wait_for_frames();
-            
-//             // Get each frame
-//             right = frames.get_infrared_frame(1);
-//             left = frames.get_infrared_frame(2);
-
-//             const int l_width = left.as<rs2::video_frame>().get_width();
-//             const int l_height = left.as<rs2::video_frame>().get_height();
-//             const int r_width = right.as<rs2::video_frame>().get_width();
-//             const int r_height = right.as<rs2::video_frame>().get_height();
-
-//             // Convert the frames to OpenCV Mat
-//             cv::Mat leftConv = cv::Mat(cv::Size(l_width, l_height), CV_8UC1, (void *)left.get_data(), cv::Mat::AUTO_STEP);
-//             cv::flip(leftConv, leftImage, -1);
-            
-//             cv::Mat rightConv = cv::Mat(cv::Size(r_width, r_height), CV_8UC1, (void *)right.get_data(), cv::Mat::AUTO_STEP);
-//             cv::flip(rightConv, rightImage, -1);
-
-//             if (!leftImage.empty() && !rightImage.empty())
-//             {
-//                 is_opened = true;
-//             }
-//         }
-//     } catch (const std::exception& e) {
-//         // Handle the exception (e.g., log the error, clean up resources, etc.)
-//         std::cerr << "Exception occurred in updateFrame: " << e.what() << std::endl;
-//     }
-// }
 
 bool StereoCamera::isOpened() const
 {
