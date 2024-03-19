@@ -7,8 +7,8 @@ StereoCamera::StereoCamera()
     // Create a Pipeline - this serves as a top-level API for streaming and processing frames
 
     // 640x480 30fps locked because depth module 
-    cfg.enable_stream(RS2_STREAM_INFRARED, 1, 848, 480, RS2_FORMAT_Y8, 30);
-    cfg.enable_stream(RS2_STREAM_INFRARED, 2, 848, 480, RS2_FORMAT_Y8, 30);
+    cfg.enable_stream(RS2_STREAM_INFRARED, 1, 640, 480, RS2_FORMAT_Y8, 30);
+    cfg.enable_stream(RS2_STREAM_INFRARED, 2, 640, 480, RS2_FORMAT_Y8, 30);
     
     pipeline_profile = pipe.start(cfg); 
     dev = pipeline_profile.get_device();

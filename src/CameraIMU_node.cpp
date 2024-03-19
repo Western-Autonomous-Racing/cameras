@@ -9,8 +9,8 @@ rgb_camera(true, MODE_2, true),
 stereo_camera(),
 imu()
 {
-    rclcpp::QoS qos_cam(rclcpp::KeepLast(200));
-    rclcpp::QoS qos_imu(rclcpp::KeepLast(1500));
+    rclcpp::QoS qos_cam(rclcpp::KeepLast(100));
+    rclcpp::QoS qos_imu(rclcpp::KeepLast(1000));
 
     // Initialize publishers 
     rgbImagePublisher = this->create_publisher<sensor_msgs::msg::Image>("/rgb_camera/color/image_raw", qos_cam);
