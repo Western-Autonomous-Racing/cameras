@@ -3,10 +3,10 @@
 #include <rclcpp/qos.hpp>
 #include <chrono>
 
-CameraImuNode::CameraImuNode() : 
+CameraImuNode::CameraImuNode(string config) : 
 Node("camera_imu_node"),
 rgb_camera(true, MODE_2, true),
-stereo_camera(),
+stereo_camera(config),
 imu()
 {
     rclcpp::QoS qos_cam(rclcpp::KeepLast(100));

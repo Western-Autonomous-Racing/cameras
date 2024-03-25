@@ -16,7 +16,7 @@ using namespace std;
 class CameraImuNode : public rclcpp::Node
 {
 public:
-    CameraImuNode();
+    CameraImuNode(string config);
     ~CameraImuNode();
     void RGBCameraThreadFunc();
     void StereoCameraThreadFunc();

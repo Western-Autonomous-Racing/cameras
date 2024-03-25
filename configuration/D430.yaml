@@ -1,0 +1,5 @@
+%YAML:1.0
+
+# Exposure Settings
+Enable_Auto: 1 # 0 means off, 1 means on
+Manual_Exposure: 2000 

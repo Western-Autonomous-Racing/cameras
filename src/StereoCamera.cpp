@@ -1,40 +1,64 @@
 #include "../include/StereoCamera.hpp"
 
-
-StereoCamera::StereoCamera()
+StereoCamera::StereoCamera(string config)
 {
+
     is_opened = false;
     // Create a Pipeline - this serves as a top-level API for streaming and processing frames
 
-    // 640x480 30fps locked because depth module 
+    // 640x480 30fps locked because depth module
     cfg.enable_stream(RS2_STREAM_INFRARED, 1, 640, 480, RS2_FORMAT_Y8, 30);
     cfg.enable_stream(RS2_STREAM_INFRARED, 2, 640, 480, RS2_FORMAT_Y8, 30);
-    
-    pipeline_profile = pipe.start(cfg); 
+
+    pipeline_profile = pipe.start(cfg);
     dev = pipeline_profile.get_device();
     depth_sensor = dev.query_sensors()[0];
-    
+
     if (depth_sensor.supports(RS2_OPTION_EMITTER_ENABLED))
     {
         depth_sensor.set_option(RS2_OPTION_EMITTER_ENABLED, 0.f); // Enable emitter
-    } 
+    }
+
+    cv::FileStorage fsSettings(config, cv::FileStorage::READ);
+    
+    if (!fsSettings.isOpened())
+    {
+      cerr << "ERROR: Wrong path to settings" << endl;
+      return;
+    }
+
+    int enable_auto = fsSettings["Enable_Auto"];
 
     if (depth_sensor.supports(RS2_OPTION_ENABLE_AUTO_EXPOSURE))
     {
-        depth_sensor.set_option(RS2_OPTION_ENABLE_AUTO_EXPOSURE, 1); // Disable auto-exposure
+        if (enable_auto)
+        {
+            depth_sensor.set_option(RS2_OPTION_ENABLE_AUTO_EXPOSURE, 1); // Enable auto-exposure
+        }
+        else
+        {
+            depth_sensor.set_option(RS2_OPTION_ENABLE_AUTO_EXPOSURE, 0); // Enable auto-exposure
+            if (depth_sensor.supports(RS2_OPTION_EXPOSURE))
+            {
+                int manual_exp = fsSettings["Manual_Exposure"];
+                depth_sensor.set_option(RS2_OPTION_EXPOSURE, manual_exp); // Set exposure
+            }
+        }
     }
 
     cout << "Stereo Camera is opened" << endl;
-
 }
 
 StereoCamera::~StereoCamera()
 {
     is_opened = false;
 
-    try {
+    try
+    {
         pipe.stop();
-    } catch (const rs2::error & e) {
+    }
+    catch (const rs2::error &e)
+    {
         std::cerr << "Failed to stop the pipeline: " << e.what() << std::endl;
     }
 }
@@ -49,7 +73,7 @@ void StereoCamera::getFrames(StereoFrame *leftFrame, StereoFrame *rightFrame)
 
     // Wait for the next set of frames from the camera
     frames = pipe.wait_for_frames();
-    
+
     // Get each frame
     right = frames.get_infrared_frame(1);
     left = frames.get_infrared_frame(2);
@@ -61,7 +85,7 @@ void StereoCamera::getFrames(StereoFrame *leftFrame, StereoFrame *rightFrame)
 
     // Convert the frames to OpenCV Mat
     cv::Mat leftImage = cv::Mat(cv::Size(l_width, l_height), CV_8UC1, (void *)left.get_data(), cv::Mat::AUTO_STEP);
-    
+
     cv::Mat rightImage = cv::Mat(cv::Size(r_width, r_height), CV_8UC1, (void *)right.get_data(), cv::Mat::AUTO_STEP);
 
     if (!leftImage.empty() && !rightImage.empty())
@@ -71,7 +95,8 @@ void StereoCamera::getFrames(StereoFrame *leftFrame, StereoFrame *rightFrame)
 
     rclcpp::Time timestamp = rclcpp::Clock().now();
 
-    if (leftImage.empty() || rightImage.empty()) {
+    if (leftImage.empty() || rightImage.empty())
+    {
         *leftFrame = StereoFrame{cv::Mat(), rclcpp::Time()};
         *rightFrame = StereoFrame{cv::Mat(), rclcpp::Time()};
         return; // Return an empty rclcpp::Time object instead of nullptr
