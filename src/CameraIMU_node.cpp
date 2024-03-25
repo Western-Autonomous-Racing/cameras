@@ -3,16 +3,15 @@
 #include <rclcpp/qos.hpp>
 #include <chrono>
 
-CameraImuNode::CameraImuNode(string config) : 
-Node("camera_imu_node"),
-rgb_camera(true, MODE_2, true),
-stereo_camera(config),
-imu()
+CameraImuNode::CameraImuNode() : Node("camera_imu_node"),
+                                 rgb_camera(true, MODE_2, true),
+                                 stereo_camera(declare_and_get_parameter("Enable_Auto", 1), declare_and_get_parameter("Manual_Exposure", 1000)),
+                                 imu()
 {
     rclcpp::QoS qos_cam(rclcpp::KeepLast(100));
     rclcpp::QoS qos_imu(rclcpp::KeepLast(1000));
 
-    // Initialize publishers 
+    // Initialize publishers
     rgbImagePublisher = this->create_publisher<sensor_msgs::msg::Image>("/rgb_camera/color/image_raw", qos_cam);
     leftStereoPublisher = this->create_publisher<sensor_msgs::msg::Image>("/stereo_camera/left/image_raw", qos_cam);
     rightStereoPublisher = this->create_publisher<sensor_msgs::msg::Image>("/stereo_camera/right/image_raw", qos_cam);
@@ -52,7 +51,6 @@ void CameraImuNode::RGBCameraThreadFunc()
         cvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image.frame);
         cvImage.header.stamp = rclcpp::Time(image.timestamp);
         rgbImagePublisher->publish(*cvImage.toImageMsg());
-
     }
 }
 
@@ -75,7 +73,7 @@ void CameraImuNode::StereoCameraThreadFunc()
         rightCvImage.header.stamp = rclcpp::Time(rightImage.timestamp);
         rightStereoPublisher->publish(*rightCvImage.toImageMsg());
 
-        auto end = std::chrono::high_resolution_clock::now(); // Stop the timer
+        auto end = std::chrono::high_resolution_clock::now();                               // Stop the timer
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); // Calculate the duration in microseconds
 
         // Delay to achieve 30 fps
@@ -103,7 +101,7 @@ void CameraImuNode::ImuThreadFunc()
     imuMsg.angular_velocity.y = gp;
     imuMsg.angular_velocity.z = gy;
 
-    //fill in with blank data
+    // fill in with blank data
     imuMsg.orientation.x = 0.0;
     imuMsg.orientation.y = 0.0;
     imuMsg.orientation.z = 0.0;

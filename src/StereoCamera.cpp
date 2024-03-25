@@ -1,6 +1,6 @@
 #include "../include/StereoCamera.hpp"
 
-StereoCamera::StereoCamera(string config)
+StereoCamera::StereoCamera(int enable_auto, int manual_exp)
 {
 
     is_opened = false;
@@ -18,16 +18,12 @@ StereoCamera::StereoCamera(string config)
     {
         depth_sensor.set_option(RS2_OPTION_EMITTER_ENABLED, 0.f); // Enable emitter
     }
-
-    cv::FileStorage fsSettings(config, cv::FileStorage::READ);
     
-    if (!fsSettings.isOpened())
+    if (enable_auto > 1 || enable_auto < 0 || manual_exp < 0)
     {
-      cerr << "ERROR: Wrong path to settings" << endl;
+      cerr << "ERROR: Bad camera settings!" << endl;
       return;
     }
-
-    int enable_auto = fsSettings["Enable_Auto"];
 
     if (depth_sensor.supports(RS2_OPTION_ENABLE_AUTO_EXPOSURE))
     {
@@ -40,7 +36,6 @@ StereoCamera::StereoCamera(string config)
             depth_sensor.set_option(RS2_OPTION_ENABLE_AUTO_EXPOSURE, 0); // Enable auto-exposure
             if (depth_sensor.supports(RS2_OPTION_EXPOSURE))
             {
-                int manual_exp = fsSettings["Manual_Exposure"];
                 depth_sensor.set_option(RS2_OPTION_EXPOSURE, manual_exp); // Set exposure
             }
         }

@@ -17,7 +17,7 @@ struct StereoFrame {
 class StereoCamera
 {
     public:
-        StereoCamera(string config);
+        StereoCamera(int enable_auto, int manual_exp);
         ~StereoCamera();
 
         // StereoFrame getLeftFrame();

@@ -16,7 +16,7 @@ using namespace std;
 class CameraImuNode : public rclcpp::Node
 {
 public:
-    CameraImuNode(string config);
+    CameraImuNode();
     ~CameraImuNode();
     void RGBCameraThreadFunc();
     void StereoCameraThreadFunc();
@@ -42,6 +42,11 @@ private:
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr leftStereoPublisher;
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr rightStereoPublisher;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imuPublisher;
+    int declare_and_get_parameter(const std::string& name, int default_value)
+    {
+        this->declare_parameter(name, default_value);
+        return this->get_parameter(name).as_int();
+    }
 };
 
 #endif

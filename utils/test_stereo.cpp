@@ -5,8 +5,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-    string config = "config/D430.yaml";
-    StereoCamera camera(config);
+    StereoCamera camera(1, 1000);
 
     if (!camera.isOpened())
     {
