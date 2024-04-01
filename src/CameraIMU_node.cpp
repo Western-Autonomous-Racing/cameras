@@ -4,7 +4,7 @@
 #include <chrono>
 
 CameraImuNode::CameraImuNode() : Node("camera_imu_node"),
-                                 rgb_camera(true, MODE_2, true),
+                                 rgb_camera(true, MODE_4, true),
                                  stereo_camera(declare_and_get_parameter("Enable_Auto", 1), declare_and_get_parameter("Manual_Exposure", 1000)),
                                  imu()
 {
