@@ -9,6 +9,7 @@ StereoCamera::StereoCamera(int enable_auto, int manual_exp)
     // 640x480 30fps locked because depth module
     cfg.enable_stream(RS2_STREAM_INFRARED, 1, 640, 480, RS2_FORMAT_Y8, 30);
     cfg.enable_stream(RS2_STREAM_INFRARED, 2, 640, 480, RS2_FORMAT_Y8, 30);
+    cfg.enable_stream(RS2_STREAM_DEPTH, -1, 640, 480, RS2_FORMAT_Z16, 30);
 
     pipeline_profile = pipe.start(cfg);
     dev = pipeline_profile.get_device();
@@ -63,7 +64,6 @@ void StereoCamera::getFrames(StereoFrame *leftFrame, StereoFrame *rightFrame, St
     rs2::frameset frames;
     rs2::frame left;
     rs2::frame right;
-    rs2::frame depth;
 
     is_opened = true;
 
@@ -73,7 +73,7 @@ void StereoCamera::getFrames(StereoFrame *leftFrame, StereoFrame *rightFrame, St
     // Get each frame
     right = frames.get_infrared_frame(1);
     left = frames.get_infrared_frame(2);
-    depth = frames.get_depth_frame();
+    rs2::depth_frame depth = frames.get_depth_frame();
 
     const int l_width = left.as<rs2::video_frame>().get_width();
     const int l_height = left.as<rs2::video_frame>().get_height();
