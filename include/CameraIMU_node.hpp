@@ -41,6 +41,7 @@ private:
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr rgbImagePublisher;
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr leftStereoPublisher;
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr rightStereoPublisher;
+    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr depthStereoPublisher;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imuPublisher;
     int declare_and_get_parameter(const std::string& name, int default_value)
     {

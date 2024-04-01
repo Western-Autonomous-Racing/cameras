@@ -58,11 +58,12 @@ StereoCamera::~StereoCamera()
     }
 }
 
-void StereoCamera::getFrames(StereoFrame *leftFrame, StereoFrame *rightFrame)
+void StereoCamera::getFrames(StereoFrame *leftFrame, StereoFrame *rightFrame, StereoFrame *depthFrame)
 {
     rs2::frameset frames;
     rs2::frame left;
     rs2::frame right;
+    rs2::frame depth;
 
     is_opened = true;
 
@@ -72,16 +73,19 @@ void StereoCamera::getFrames(StereoFrame *leftFrame, StereoFrame *rightFrame)
     // Get each frame
     right = frames.get_infrared_frame(1);
     left = frames.get_infrared_frame(2);
+    depth = frames.get_depth_frame();
 
     const int l_width = left.as<rs2::video_frame>().get_width();
     const int l_height = left.as<rs2::video_frame>().get_height();
     const int r_width = right.as<rs2::video_frame>().get_width();
     const int r_height = right.as<rs2::video_frame>().get_height();
+    const int d_width = depth.as<rs2::video_frame>().get_width();
+    const int d_height = depth.as<rs2::video_frame>().get_height();
 
     // Convert the frames to OpenCV Mat
     cv::Mat leftImage = cv::Mat(cv::Size(l_width, l_height), CV_8UC1, (void *)left.get_data(), cv::Mat::AUTO_STEP);
-
     cv::Mat rightImage = cv::Mat(cv::Size(r_width, r_height), CV_8UC1, (void *)right.get_data(), cv::Mat::AUTO_STEP);
+    cv::Mat depthImage = cv::Mat(cv::Size(d_width, d_height), CV_16UC1, (void *)depth.get_data(), cv::Mat::AUTO_STEP);
 
     if (!leftImage.empty() && !rightImage.empty())
     {
@@ -90,15 +94,17 @@ void StereoCamera::getFrames(StereoFrame *leftFrame, StereoFrame *rightFrame)
 
     rclcpp::Time timestamp = rclcpp::Clock().now();
 
-    if (leftImage.empty() || rightImage.empty())
+    if (leftImage.empty() || rightImage.empty() || depthImage.empty())
     {
         *leftFrame = StereoFrame{cv::Mat(), rclcpp::Time()};
         *rightFrame = StereoFrame{cv::Mat(), rclcpp::Time()};
+        *depthFrame = StereoFrame{cv::Mat(), rclcpp::Time()};
         return; // Return an empty rclcpp::Time object instead of nullptr
     }
 
     *leftFrame = StereoFrame{leftImage, timestamp};
     *rightFrame = StereoFrame{rightImage, timestamp};
+    *depthFrame = StereoFrame{depthImage, timestamp};
 }
 
 bool StereoCamera::isOpened() const

@@ -23,7 +23,7 @@ class StereoCamera
         // StereoFrame getLeftFrame();
         // StereoFrame getRightFrame();
         // void updateFrame();
-        void getFrames(StereoFrame *leftFrame, StereoFrame *rightFrame);
+        void getFrames(StereoFrame *leftFrame, StereoFrame *rightFrame, StereoFrame *depthFrame);
         bool isOpened() const;
         void signal_interrupted(int signal);
 
@@ -36,6 +36,7 @@ class StereoCamera
 
         cv::Mat leftImage;
         cv::Mat rightImage;
+        cv::Mat depthImage;
         thread *camThread;
         bool is_opened;
 };

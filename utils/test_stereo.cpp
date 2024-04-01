@@ -15,8 +15,8 @@ int main(int argc, char** argv)
 
     while (1)
     {
-        StereoFrame left, right;
-        camera.getFrames(&left, &right);
+        StereoFrame left, right, depth;
+        camera.getFrames(&left, &right, &depth);
 
         if (left.frame.empty() && right.frame.empty())
         {

@@ -15,6 +15,7 @@ CameraImuNode::CameraImuNode() : Node("camera_imu_node"),
     rgbImagePublisher = this->create_publisher<sensor_msgs::msg::Image>("/rgb_camera/color/image_raw", qos_cam);
     leftStereoPublisher = this->create_publisher<sensor_msgs::msg::Image>("/stereo_camera/left/image_raw", qos_cam);
     rightStereoPublisher = this->create_publisher<sensor_msgs::msg::Image>("/stereo_camera/right/image_raw", qos_cam);
+    depthStereoPublisher = this->create_publisher<sensor_msgs::msg::Image>("/stereo_camera/depth/image_raw", qos_cam);
     imuPublisher = this->create_publisher<sensor_msgs::msg::Imu>("/imu", qos_imu);
 
     // Initialize threads
@@ -56,14 +57,14 @@ void CameraImuNode::RGBCameraThreadFunc()
 
 void CameraImuNode::StereoCameraThreadFunc()
 {
-    StereoFrame leftImage, rightImage;
-    cv_bridge::CvImage leftCvImage, rightCvImage;
+    StereoFrame leftImage, rightImage, depthImage;
+    cv_bridge::CvImage leftCvImage, rightCvImage, depthCvImage;
     while (rclcpp::ok())
     {
         auto start = std::chrono::high_resolution_clock::now(); // Start the timer
 
         // Get images
-        stereo_camera.getFrames(&leftImage, &rightImage);
+        stereo_camera.getFrames(&leftImage, &rightImage, &depthImage);
 
         leftCvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "mono8", leftImage.frame);
         leftCvImage.header.stamp = rclcpp::Time(leftImage.timestamp);
@@ -72,6 +73,10 @@ void CameraImuNode::StereoCameraThreadFunc()
         rightCvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "mono8", rightImage.frame);
         rightCvImage.header.stamp = rclcpp::Time(rightImage.timestamp);
         rightStereoPublisher->publish(*rightCvImage.toImageMsg());
+
+        depthCvImage = cv_bridge::CvImage(std_msgs::msg::Header(), "mono16", depthImage.frame);
+        depthCvImage.header.stamp = rclcpp::Time(depthImage.timestamp);
+        depthStereoPublisher->publish(*depthCvImage.toImageMsg());
 
         auto end = std::chrono::high_resolution_clock::now();                               // Stop the timer
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); // Calculate the duration in microseconds
